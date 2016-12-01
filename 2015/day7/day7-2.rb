@@ -1,6 +1,14 @@
-input = File.read('./input.txt')
+@input = File.read('./input.txt')
 total = 0
-@circuit = {}
+
+def build_circuit
+  @circuit = {}
+  @input.each_line do |line|
+    source = line.slice(/[^->]*/).rstrip
+    destination = line.slice(/->(.*)/)[3..-1].rstrip
+    @circuit[destination] = { input: source, value: nil }
+  end
+end
 
 def process_node(node)
   input_nodes = []
@@ -52,14 +60,12 @@ def traverse_circuit
   end
 end
 
-input.each_line do |line|
-  source = line.slice(/[^->]*/).rstrip
-  destination = line.slice(/->(.*)/)[3..-1].rstrip
-  @circuit[destination] = { input: source, value: nil }
-end
-
+build_circuit
 traverse_circuit
-@circuit["b"] = { input: "a", value: nil }
+puts @circuit["a"][:value]
+temp_value = @circuit["a"][:value]
+build_circuit
+@circuit["b"] = { input: temp_value.to_s, value: nil }
 traverse_circuit
 puts @circuit["a"]
 
